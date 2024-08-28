@@ -11,16 +11,17 @@ int get_valid_int(void);
 int main(void) {
     const int N = 3;
     int scores[N];    // scores is declared as an array of integers of lenght 3. 3 * size of int = 24 bytes. scores is a pointer to the first byte.
-    int sum = 0;
+    long long int sum = 0;
 
     for (int i = 0; i < N; i++) {                        // populate the scores arr and add to sum
         printf("Enter a score. (%i of %i): ", i+1, N);
         int score = get_valid_int();
         scores[i] = score;
         sum += score;
+        printf("    Sum = %lli\n", sum);
     }
 
-    float average = (float) sum / N;
+    double average = (double) sum / N;
 
     printf("The average score of ");
     for (int i = 0; i < N; i++) {
@@ -46,18 +47,27 @@ int get_valid_int(void) {
 
         fgets(in, MAX_INPUT_LENGTH, stdin);     // read chars to the arr pointed to by in till /n or MAX_INPUT_LENGTH - 1 chars have been read from the stdin (standar input) 
     
-        int len = strlen(in);                   // strlen returns the length of the char arry excluding the null char.
-    
-        for (int i = 0; i < len - 1; i++) {         // validate that in is a negative or positive integer
-            if (!isdigit(in[i]) && (i != 0 && in[i] != '-')) {
+        int in_len = strlen(in);                   // strlen returns the length of the char arry excluding the null char.
+        int max_len = 10;
+
+        for (int i = 0; i < in_len - 1; i++) {         // validate that in is a negative or positive integer
+            // if i = 0 and - then increase max_digits
+            // elif not a digit non-didgit output
+            // elif i > max digit: outside of range
+            if (i == 0 && in[i] == '-') {
+                max_len ++;
+            } else if (!isdigit(in[i])) {
                 valid = 0;
                 printf("Invalid Input: Non-digit %s\nEnter Integer in the range -(2^31), ((2^31)-1): ", in);
-            } 
+            } else if (i == max_len) {
+                valid = 0;
+                printf("Invalid Input: Input too long %s\nEnter Integer in the range -(2^31), ((2^31)-1): ", in);
+            }   
         }
 
         if (valid) {
             errno = 0;
-            long int value = strtol(in, &endptr, 10);               // string to long: *charArray, thisWillPointToLastConvertedChar, base10
+            int value = strtol(in, &endptr, 10);               // string to long: *charArray, thisWillPointToLastConvertedChar, base10
             if  (errno == ERANGE) {                                 // out of range of the long
                 valid = 0;
                 printf("Invalid Input: out of range of long. %s\nEnter Integer in the range -(2^31), ((2^31)-1): ", in);
@@ -66,6 +76,7 @@ int get_valid_int(void) {
                 printf("Invalid Input: out of range of int. %s\nEnter Integer in the range -(2^31), ((2^31)-1): ", in);
             } else {
                 out = (int) value;
+                printf("    Entered: %i\n", out);
             }
         }
     }
