@@ -34,7 +34,7 @@ int main(void) {
     return 1;
 }
 int get_valid_int(void) {
-    const int MAX_INPUT_LENGTH = 12;  // the string representation of an integer is at most 12 bytes long "-2147483648\0"
+    const int MAX_INPUT_LENGTH = 12;     // the string representation of an integer is at most 11 bytes long "-2147483648\n" excluding the null char
     const int MIN_INT = -2147483648;
     const int MAX_INT = 2147483647;
     char in[MAX_INPUT_LENGTH];
@@ -45,38 +45,63 @@ int get_valid_int(void) {
     while (!valid) {
         valid = 1;
 
-        fgets(in, MAX_INPUT_LENGTH, stdin);     // read chars to the arr pointed to by in till /n or MAX_INPUT_LENGTH - 1 chars have been read from the stdin (standar input) 
-    
-        int in_len = strlen(in);                   // strlen returns the length of the char arry excluding the null char.
-        int max_len = 10;
+        /*
+        Beware fgets(buffer, n, stream): Ensures proper string termination. reads up to n - 1 chars. Chars in the input beyond n-1 are left in 
+        the input buffer. So, the next time fgets is called it reads from the chars in the leftover input buffer. Clear the buffer input after 
+        calling to prevent this.
+        */
+        fgets(in, MAX_INPUT_LENGTH, stdin);
 
-        for (int i = 0; i < in_len - 1; i++) {         // validate that in is a negative or positive integer
-            // if i = 0 and - then increase max_digits
-            // elif not a digit non-didgit output
-            // elif i > max digit: outside of range
-            if (i == 0 && in[i] == '-') {
-                max_len ++;
-            } else if (!isdigit(in[i])) {
-                valid = 0;
-                printf("Invalid Input: Non-digit %s\nEnter Integer in the range -(2^31), ((2^31)-1): ", in);
-            } else if (i == max_len) {
-                valid = 0;
-                printf("Invalid Input: Input too long %s\nEnter Integer in the range -(2^31), ((2^31)-1): ", in);
-            }   
+        int in_len = strlen(in);        // Strlen returns the length of the char arry excluding the null char.
+        int too_long = 0;
+
+        if (in[in_len - 1] =='\n') {    // if there is a \n in the input then there are no chars remaining in the input buffer.
+            in[strcspn(in,"\n")] = 0;   
+            in_len --;
+        } else {                        // if there is no \n in the input then there are chars remaining in the buffer.
+            int ch;                     
+            while ((ch = getchar()) != '\n' && ch != EOF) {
+                if (too_long == 0) {
+                    too_long = 1;
+                }
+            }
+        }
+        
+        if (too_long) {
+            valid = 0;
+            printf("Invalid Input: Input too long. Expected at most 11 chars \nEnter Integer in the range -(2^31), ((2^31)-1): ", in);
+        }
+
+        if (valid) {
+            printf("    Entered '%s' \n", in);
+            for (int i = 0; i < in_len; i++) {                                      // validate that in is a negative or positive integer 
+                if (!isdigit(in[i])) {
+                    if ((in[i] == '-' && i == 0)) {
+                        if (!(in_len > (i + 1))) {
+                            valid = 0;
+                            printf("Invalid Input: Non-digit %s\nEnter Integer in the range -(2^31), ((2^31)-1): ", in);
+                            break;
+                        }
+                    } else {
+                        valid = 0;
+                        printf("Invalid Input: Non-digit %s\nEnter Integer in the range -(2^31), ((2^31)-1): ", in);
+                        break;
+                    }
+                }
+            }
         }
 
         if (valid) {
             errno = 0;
-            int value = strtol(in, &endptr, 10);               // string to long: *charArray, thisWillPointToLastConvertedChar, base10
+            long long int value = strtol(in, &endptr, 10);               // string to long: *charArray, thisWillPointToLastConvertedChar, base10
             if  (errno == ERANGE) {                                 // out of range of the long
                 valid = 0;
-                printf("Invalid Input: out of range of long. %s\nEnter Integer in the range -(2^31), ((2^31)-1): ", in);
+                printf("Invalid Input: out of range of int. %s\nEnter Integer in the range -(2^31), ((2^31)-1): ", in);
             } else if (value < MIN_INT || value > MAX_INT) {        // out of range
                 valid = 0;
                 printf("Invalid Input: out of range of int. %s\nEnter Integer in the range -(2^31), ((2^31)-1): ", in);
             } else {
-                out = (int) value;
-                printf("    Entered: %i\n", out);
+                out = value;
             }
         }
     }
