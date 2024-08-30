@@ -96,7 +96,7 @@ int get_valid_int(void) {
             long long int value = strtol(in, &endptr, 10);               // string to long: *charArray, thisWillPointToLastConvertedChar, base10
             if  (errno == ERANGE) {                                 // out of range of the long
                 valid = 0;
-                printf("Invalid Input: out of range of int. %s\nEnter Integer in the range -(2^31), ((2^31)-1): ", in);
+                printf("Invalid Input: out of range of long. %s\nEnter Integer in the range -(2^31), ((2^31)-1): ", in);
             } else if (value < MIN_INT || value > MAX_INT) {        // out of range
                 valid = 0;
                 printf("Invalid Input: out of range of int. %s\nEnter Integer in the range -(2^31), ((2^31)-1): ", in);
