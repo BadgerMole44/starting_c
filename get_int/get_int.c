@@ -1,5 +1,9 @@
 #include <stdio.h>
 
+/*
+What? prompts for two integers using scanf preforms simple validation and displays if the integers are >, <, or =
+*/
+
 int main(void){
     int x;
     int y;

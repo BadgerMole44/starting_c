@@ -4,6 +4,16 @@
 #include <limits.h>
 #include <string.h>
 #include <ctype.h>
+/*
+What? prompts user for three integers calculates and displays the average.
+Description: 
+    Main: prompts 
+        the user for an integer three times uses, get_valid_int to read and validate the user input. Main stores the integer values in an 
+        array. Once 3 valid integers have been passed the integers are displayed to the user along with the average.
+    get_valid_int: 
+        Uses fgets to get an integer in the range -(2^31), (2^31)-1. validates that the string input is an integer in the range and returns 
+        the integer value.
+*/
 
 
 int get_valid_int(void);
@@ -52,7 +62,7 @@ int get_valid_int(void) {
         */
         fgets(in, MAX_INPUT_LENGTH, stdin);
 
-        int in_len = strlen(in);        // Strlen returns the length of the char arry excluding the null char.
+        int in_len = strlen(in);                        // Strlen returns the length of the char arry excluding the null char.
         int too_long = 0;
 
         if (in[in_len - 1] =='\n') {    // if there is a \n in the input then there are no chars remaining in the input buffer.
@@ -91,7 +101,7 @@ int get_valid_int(void) {
             }
         }
 
-        if (valid) {
+        if (valid) {            // convert ascii to int
             errno = 0;
             long long int value = strtol(in, &endptr, 10);               // string to long: *charArray, thisWillPointToLastConvertedChar, base10
             if  (errno == ERANGE) {                                 // out of range of the long

@@ -1,5 +1,9 @@
 #include <stdio.h>
 
+/*
+What? messing with storinginput strings.
+*/
+
 int main(void){
     /*
     In C strings are character arrays.
